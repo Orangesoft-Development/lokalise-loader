@@ -1,3 +1,5 @@
+import data.Platforms
+
 fun main(args: Array<String>) {
     val apiToken = args[0]
     val projectId = args[1]
@@ -6,7 +8,7 @@ fun main(args: Array<String>) {
         this.apiToken = apiToken
         this.projectId = projectId
         this.outputDirPath = output
-        this.platforms = listOf("android", "other")
+        this.platforms = listOf(Platforms.Android, Platforms.Other)
     }
     loader.load()
 }
