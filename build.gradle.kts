@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.github.trueddd"
-version = "0.0.4"
+version = "0.0.6"
 
 repositories {
     mavenCentral()

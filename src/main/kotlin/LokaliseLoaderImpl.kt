@@ -10,7 +10,8 @@ internal class LokaliseLoaderImpl(
     private val apiToken: String,
     private val projectId: String,
     private val outputDirPath: String,
-    private val platforms: List<String>,
+    private val platforms: List<Platforms>,
+    private val defaultLocale: String,
 ) : LokaliseLoader {
 
     private val okHttpClient by lazy { OkHttpClient() }
@@ -35,7 +36,7 @@ internal class LokaliseLoaderImpl(
             append("include_screenshots=0&")
             append("include_translations=0&")
             append("filter_platforms=")
-            append(platforms.joinToString(","))
+            append(platforms.joinToString(",") { it.raw })
         }
         val keysRequest = Request.Builder()
             .get()
@@ -125,7 +126,8 @@ internal class LokaliseLoaderImpl(
                 buildString {
                     append("\n\t<plurals name=\"${it.key.keyName.android}\">")
                     plurals.forEach { (quantity, value) ->
-                        append("\n\t\t<item quantity=\"$quantity\">$value</item>")
+                        val string = value.replace("\'", "\\\'")
+                        append("\n\t\t<item quantity=\"$quantity\">$string</item>")
                     }
                     append("\n\t</plurals>")
                 }
@@ -138,7 +140,7 @@ internal class LokaliseLoaderImpl(
             append(xmlHeader)
             append("\n<resources>")
             xmlFormattedKeys.forEach {
-                append(it)
+                append(it.replace("\'", "\\\'"))
             }
             append("\n</resources>")
         }
@@ -151,7 +153,8 @@ internal class LokaliseLoaderImpl(
         val translations = loadTranslations().groupBy { it.languageIso }
         val isoLangs = languages.map { it.langIso }
         isoLangs.forEach { isoLang ->
-            val dirName = "values-${isoLang.substringBefore('_')}"
+            val isoLangTrimmed = isoLang.substringBefore('_')
+            val dirName = if (defaultLocale == isoLangTrimmed) "values" else "values-$isoLangTrimmed"
             val dir = File("$outputDirPath/$dirName")
             if (!dir.exists()) {
                 dir.mkdir()

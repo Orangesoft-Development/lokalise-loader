@@ -1,3 +1,5 @@
+import data.Platforms
+
 interface LokaliseLoader {
 
     fun load()
@@ -6,7 +8,8 @@ interface LokaliseLoader {
         var apiToken: String? = null,
         var projectId: String? = null,
         var outputDirPath: String? = null,
-        var platforms: List<String> = listOf("android"),
+        var defaultLocale: String = "en",
+        var platforms: List<Platforms> = listOf(Platforms.Android),
     )
 
     companion object {
@@ -17,6 +20,7 @@ interface LokaliseLoader {
                 config.projectId ?: throw IllegalStateException("Project ID must be specified"),
                 config.outputDirPath ?: throw IllegalStateException("Output directory must be specified"),
                 config.platforms,
+                config.defaultLocale,
             )
         }
     }
