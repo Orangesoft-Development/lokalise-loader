@@ -2,6 +2,13 @@ interface LokaliseLoader {
 
     fun load()
 
+    data class Config(
+        var apiToken: String? = null,
+        var projectId: String? = null,
+        var outputDirPath: String? = null,
+        var platforms: List<String> = listOf("android"),
+    )
+
     companion object {
         fun create(block: Config.() -> Unit): LokaliseLoader {
             val config = Config().apply(block)
