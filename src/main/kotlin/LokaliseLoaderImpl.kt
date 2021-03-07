@@ -10,6 +10,7 @@ internal class LokaliseLoaderImpl(
     private val apiToken: String,
     private val projectId: String,
     private val outputDirPath: String,
+    private val platforms: List<String>,
 ) : LokaliseLoader {
 
     private val okHttpClient by lazy { OkHttpClient() }
@@ -25,12 +26,17 @@ internal class LokaliseLoaderImpl(
         }
     }
 
-    fun test() {
-        println("$apiToken $projectId $outputDirPath")
-    }
-
     private fun loadKeys(): List<Key> {
-        val keysBaseUrl = "https://api.lokalise.com/api2/projects/$projectId/keys?include_comments=0&include_screenshots=0&include_translations=0&filter_platforms=android"
+        val baseUrl = buildString {
+            append("https://api.lokalise.com/api2/projects/")
+            append(projectId)
+            append("/keys")
+            append("?include_comments=0&")
+            append("include_screenshots=0&")
+            append("include_translations=0&")
+            append("filter_platforms=")
+            append(platforms.joinToString(","))
+        }
         val keysRequest = Request.Builder()
             .get()
             .addHeader("X-Api-Token", apiToken)
@@ -39,7 +45,7 @@ internal class LokaliseLoaderImpl(
         while (true) {
             val call = okHttpClient.newCall(
                 keysRequest
-                    .url("$keysBaseUrl&page=$page&limit=5000")
+                    .url("$baseUrl&page=$page&limit=5000")
                     .build()
             ).execute()
             val pageKeys = if (call.isSuccessful) {
