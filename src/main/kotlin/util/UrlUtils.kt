@@ -6,5 +6,5 @@ fun createBaseUrlBuilder(): HttpUrl.Builder {
     return HttpUrl.Builder()
         .scheme("https")
         .host("api.lokalise.com")
-        .addPathSegment("api")
+        .addPathSegment("api2")
 }
