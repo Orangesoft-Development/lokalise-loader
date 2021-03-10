@@ -143,8 +143,7 @@ internal class LokaliseLoaderImpl(
                 buildString {
                     append("\n\t<plurals name=\"${it.key.keyName.android}\">")
                     plurals.forEach { (quantity, value) ->
-                        val string = value.replace("\'", "\\\'")
-                        append("\n\t\t<item quantity=\"$quantity\">$string</item>")
+                        append("\n\t\t<item quantity=\"$quantity\">$value</item>")
                     }
                     append("\n\t</plurals>")
                 }
