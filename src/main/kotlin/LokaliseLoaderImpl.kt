@@ -3,6 +3,7 @@ import com.google.gson.reflect.TypeToken
 import data.*
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import util.createBaseUrlBuilder
 import util.leftJoin
 import java.io.File
 
@@ -28,16 +29,14 @@ internal class LokaliseLoaderImpl(
     }
 
     private fun loadKeys(): List<Key> {
-        val baseUrl = buildString {
-            append("https://api.lokalise.com/api2/projects/")
-            append(projectId)
-            append("/keys")
-            append("?include_comments=0&")
-            append("include_screenshots=0&")
-            append("include_translations=0&")
-            append("filter_platforms=")
-            append(platforms.joinToString(",") { it.raw })
-        }
+        val urlBuilder = createBaseUrlBuilder()
+            .addPathSegment("projects")
+            .addPathSegment(projectId)
+            .addPathSegment("keys")
+            .addQueryParameter("include_comments", "0")
+            .addQueryParameter("include_screenshots", "0")
+            .addQueryParameter("include_translations", "0")
+            .addQueryParameter("filter_platforms", platforms.joinToString(",") { it.raw })
         val keysRequest = Request.Builder()
             .get()
             .addHeader("X-Api-Token", apiToken)
@@ -46,7 +45,12 @@ internal class LokaliseLoaderImpl(
         while (true) {
             val call = okHttpClient.newCall(
                 keysRequest
-                    .url("$baseUrl&page=$page&limit=5000")
+                    .url(
+                        urlBuilder
+                            .setQueryParameter("page", "$page")
+                            .setQueryParameter("limit", "5000")
+                            .build()
+                    )
                     .build()
             ).execute()
             val pageKeys = if (call.isSuccessful) {
@@ -69,10 +73,15 @@ internal class LokaliseLoaderImpl(
     }
 
     private fun loadLanguages(): List<Language> {
-        val baseUrl = "https://api.lokalise.com/api2/projects/$projectId/languages?limit=5000"
+        val url = createBaseUrlBuilder()
+            .addPathSegment("projects")
+            .addPathSegment(projectId)
+            .addPathSegment("languages")
+            .addQueryParameter("limit", "5000")
+            .build()
         val request = Request.Builder()
             .get()
-            .url(baseUrl)
+            .url(url)
             .addHeader("X-Api-Token", apiToken)
             .build()
         val call = okHttpClient.newCall(request).execute()
@@ -87,7 +96,10 @@ internal class LokaliseLoaderImpl(
     }
 
     private fun loadTranslations(): List<Translation> {
-        val baseUrl = "https://api.lokalise.com/api2/projects/$projectId/translations"
+        val urlBuilder = createBaseUrlBuilder()
+            .addPathSegment("projects")
+            .addPathSegment(projectId)
+            .addPathSegment("translations")
         val translationsRequest = Request.Builder()
             .get()
             .addHeader("X-Api-Token", apiToken)
@@ -96,7 +108,12 @@ internal class LokaliseLoaderImpl(
         while (true) {
             val call = okHttpClient.newCall(
                 translationsRequest
-                    .url("$baseUrl?page=$page&limit=5000")
+                    .url(
+                        urlBuilder
+                            .setQueryParameter("page", "$page")
+                            .setQueryParameter("limit", "5000")
+                            .build()
+                    )
                     .build()
             ).execute()
             val translations = if (call.isSuccessful) {
