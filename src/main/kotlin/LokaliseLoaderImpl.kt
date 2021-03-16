@@ -135,6 +135,25 @@ internal class LokaliseLoaderImpl(
         return allTranslations
     }
 
+    private val placeholder: Regex by lazy {
+        Regex("\\[?%(?<number>\\d+\\$)?(?<literal>[sif]|\\.\\d+f)]?")
+    }
+
+    private fun String.formatFromLokalise(): String {
+        return this
+            .replace("\'", "\\\'")
+            .replace(placeholder) { matchResult ->
+                val literalValue = matchResult.groups["literal"]?.value
+                val number = matchResult.groups["number"]?.value ?: ""
+                val literal = when (literalValue) {
+                    null -> "s"
+                    "i" -> "d"
+                    else -> literalValue
+                }
+                "%$number$literal"
+            }
+    }
+
     private fun writeKeysToFile(file: File, translations: Map<Key, Translation?>) {
         val xmlFormattedKeys = translations.mapNotNull {
             val translation = it.value ?: return@mapNotNull null
@@ -143,12 +162,13 @@ internal class LokaliseLoaderImpl(
                 buildString {
                     append("\n\t<plurals name=\"${it.key.keyName.android}\">")
                     plurals.forEach { (quantity, value) ->
-                        append("\n\t\t<item quantity=\"$quantity\">$value</item>")
+                        val formattedValue = value.formatFromLokalise()
+                        append("\n\t\t<item quantity=\"$quantity\">$formattedValue</item>")
                     }
                     append("\n\t</plurals>")
                 }
             } else {
-                "\n\t<string name=\"${it.key.keyName.android}\">${translation.value}</string>"
+                "\n\t<string name=\"${it.key.keyName.android}\">${translation.value.formatFromLokalise()}</string>"
             }
         }
         val xmlHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -156,7 +176,7 @@ internal class LokaliseLoaderImpl(
             append(xmlHeader)
             append("\n<resources>")
             xmlFormattedKeys.forEach {
-                append(it.replace("\'", "\\\'"))
+                append(it)
             }
             append("\n</resources>")
         }
