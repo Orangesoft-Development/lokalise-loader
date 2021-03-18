@@ -6,8 +6,8 @@ plugins {
     maven
 }
 
-group = "com.github.trueddd"
-version = "0.1.0"
+group = "com.github.Orangesoft-Development.trueddd"
+version = "0.1.1"
 
 repositories {
     mavenCentral()
@@ -22,6 +22,7 @@ application {
 }
 
 dependencies {
+    implementation(gradleApi())
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
     implementation("com.google.code.gson:gson:2.8.6")
 }

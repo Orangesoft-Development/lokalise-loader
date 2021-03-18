@@ -1,7 +1,14 @@
 import data.Platforms
-
+import exceptions.LokaliseLoadException
+import exceptions.ParameterNotSpecifiedException
+import exceptions.ResourceWriteException
 interface LokaliseLoader {
 
+    /**
+     * Loads string resources from Lokalise, formats them according Android standards and writes them into files.
+     * @throws LokaliseLoadException if exception occurred while loading data from Lokalise
+     * @throws ResourceWriteException if exception occurred while writing string resources into files
+     */
     fun load()
 
     data class Config(
@@ -16,9 +23,9 @@ interface LokaliseLoader {
         fun create(block: Config.() -> Unit): LokaliseLoader {
             val config = Config().apply(block)
             return LokaliseLoaderImpl(
-                config.apiToken ?: throw IllegalStateException("API token must be specified"),
-                config.projectId ?: throw IllegalStateException("Project ID must be specified"),
-                config.outputDirPath ?: throw IllegalStateException("Output directory must be specified"),
+                config.apiToken ?: throw ParameterNotSpecifiedException("API token"),
+                config.projectId ?: throw ParameterNotSpecifiedException("Project ID"),
+                config.outputDirPath ?: throw ParameterNotSpecifiedException("Output directory"),
                 config.platforms,
                 config.defaultLocale,
             )

@@ -1,6 +1,9 @@
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import data.*
+import exceptions.LokaliseException
+import exceptions.LokaliseLoadException
+import exceptions.ResourceWriteException
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import util.createBaseUrlBuilder
@@ -28,6 +31,7 @@ internal class LokaliseLoaderImpl(
         }
     }
 
+    @Throws(LokaliseLoadException::class)
     private fun loadKeys(): List<Key> {
         val urlBuilder = createBaseUrlBuilder()
             .addPathSegment("projects")
@@ -60,7 +64,7 @@ internal class LokaliseLoaderImpl(
                 null
             }
             when {
-                pageKeys == null -> throw IllegalStateException("Something wrong happened while loading keys")
+                pageKeys == null -> throw LokaliseLoadException("keys")
                 pageKeys.keys.isEmpty() -> break
                 else -> {
                     keys.addAll(pageKeys.keys)
@@ -72,6 +76,7 @@ internal class LokaliseLoaderImpl(
         return keys
     }
 
+    @Throws(LokaliseLoadException::class)
     private fun loadLanguages(): List<Language> {
         val url = createBaseUrlBuilder()
             .addPathSegment("projects")
@@ -90,11 +95,12 @@ internal class LokaliseLoaderImpl(
         } else {
             System.err.println(call.message)
             null
-        } ?: throw IllegalStateException("Something wrong happened while loading languages")
+        } ?: throw LokaliseLoadException("languages")
         println("$TAG: Loaded ${response.languages.size} languages")
         return response.languages
     }
 
+    @Throws(LokaliseLoadException::class)
     private fun loadTranslations(): List<Translation> {
         val urlBuilder = createBaseUrlBuilder()
             .addPathSegment("projects")
@@ -123,7 +129,7 @@ internal class LokaliseLoaderImpl(
                 null
             }
             when {
-                translations == null -> throw IllegalStateException("Something wrong happened while loading translations")
+                translations == null -> throw LokaliseLoadException("translations")
                 translations.translations.isEmpty() -> break
                 else -> {
                     allTranslations.addAll(translations.translations)
@@ -154,6 +160,7 @@ internal class LokaliseLoaderImpl(
             }
     }
 
+    @Throws(ResourceWriteException::class)
     private fun writeKeysToFile(file: File, translations: Map<Key, Translation?>) {
         val xmlFormattedKeys = translations.mapNotNull {
             val translation = it.value ?: return@mapNotNull null
@@ -183,12 +190,13 @@ internal class LokaliseLoaderImpl(
         file.writeText(result)
     }
 
+    @Throws(LokaliseException::class)
     override fun load() {
         val languages = loadLanguages()
         val keys = loadKeys()
         val translations = loadTranslations().groupBy { it.languageIso }
         val isoLangs = languages.map { it.langIso }
-        isoLangs.forEach { isoLang ->
+        val writtenFiles = isoLangs.map { isoLang ->
             val isoLangTrimmed = isoLang.substringBefore('_')
             val dirName = if (defaultLocale == isoLangTrimmed) "values" else "values-$isoLangTrimmed"
             val dir = File("$outputDirPath/$dirName")
@@ -199,9 +207,20 @@ internal class LokaliseLoaderImpl(
             if (!file.exists()) {
                 file.createNewFile()
             }
-            val langTranslations = translations[isoLang] ?: return@forEach
+            val langTranslations = translations[isoLang] ?: return@map isoLangTrimmed to false
             val langTranslationsWithKeys = keys.leftJoin(langTranslations, { it.keyId }, { it.keyId })
-            writeKeysToFile(file, langTranslationsWithKeys)
+            try {
+                writeKeysToFile(file, langTranslationsWithKeys)
+                isoLangTrimmed to true
+            } catch (e: Exception) {
+                isoLangTrimmed to false
+            }
+        }
+        val successfullyWritten = writtenFiles.mapNotNull { if (it.second) it.first else null }
+        val notWritten = writtenFiles.mapNotNull { if (!it.second) it.first else null }
+        println("$TAG: Written ${writtenFiles.count { it.second }} locale files $successfullyWritten")
+        if (notWritten.isNotEmpty()) {
+            throw ResourceWriteException(notWritten)
         }
     }
 

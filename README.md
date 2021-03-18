@@ -16,15 +16,24 @@ Add library definition to dependencies:
 implementaion("com.github.Orangesoft-Development:lokalise-loader:<version>")
 ```
 
-(Optional) Implement Gradle task to load string resources during builds:
+Library provides Gradle task to load string resources during builds. To use task register it like in sample below:
 ```kotlin
-tasks.register("lokalise-update") {
-    val lokaliseLoader = LokaliseLoader.create {
-        apiToken = "<lokalise-user-api-key>"
-        projectId = "<lokalise-projectId>"
-        outputDirPath = "<resources-directory-path>"
-        platforms = listOf(data.Platforms.Android)
-    }
-    lokaliseLoader.load()
+// kotlin gradle dsl
+task<LokaliseUpdateTask>("lokalise-update") {
+    targetDir = "<resources-directory-path>"
+    apiToken = "<lokalise-user-api-key>"
+    projectId = "<lokalise-projectId>"
+    platforms = listOf(data.Platforms.Android)
 }
+```
+
+Or use `LokaliseLoader` directly using `create` method:
+```kotlin
+val lokaliseLoader = LokaliseLoader.create {
+    apiToken = "<lokalise-user-api-key>"
+    projectId = "<lokalise-projectId>"
+    outputDirPath = "<resources-directory-path>"
+    platforms = listOf(data.Platforms.Android)
+}
+lokaliseLoader.load()
 ```
