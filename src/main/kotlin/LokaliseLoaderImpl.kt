@@ -3,6 +3,7 @@ import com.google.gson.reflect.TypeToken
 import data.*
 import exceptions.LokaliseException
 import exceptions.LokaliseLoadException
+import exceptions.ParameterNotSpecifiedException
 import exceptions.ResourceWriteException
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -13,9 +14,9 @@ import java.io.File
 internal class LokaliseLoaderImpl(
     private val apiToken: String,
     private val projectId: String,
-    private val outputDirPath: String,
-    private val platforms: List<Platforms>,
-    private val defaultLocale: String,
+    private val outputDirPath: String?,
+    private val platforms: List<Platforms> = emptyList(),
+    private val defaultLocale: String?,
 ) : LokaliseLoader {
 
     private val okHttpClient by lazy { OkHttpClient() }
@@ -77,7 +78,7 @@ internal class LokaliseLoaderImpl(
     }
 
     @Throws(LokaliseLoadException::class)
-    private fun loadLanguages(): List<Language> {
+    override fun loadLanguages(): List<Language> {
         val url = createBaseUrlBuilder()
             .addPathSegment("projects")
             .addPathSegment(projectId)
@@ -192,6 +193,7 @@ internal class LokaliseLoaderImpl(
 
     @Throws(LokaliseException::class)
     override fun load() {
+        if (outputDirPath == null) throw ParameterNotSpecifiedException("Output directory")
         val languages = loadLanguages()
         val keys = loadKeys()
         val translations = loadTranslations().groupBy { it.languageIso }

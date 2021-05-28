@@ -1,3 +1,6 @@
+package tasks
+
+import LokaliseLoader
 import data.Platforms
 import exceptions.LokaliseException
 import org.gradle.api.DefaultTask
@@ -5,6 +8,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 
+@Suppress("unused")
 open class LokaliseUpdateTask : DefaultTask() {
 
     init {
