@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.github.Orangesoft-Development.trueddd"
-version = "0.1.2"
+version = "0.1.3"
 
 repositories {
     mavenCentral()

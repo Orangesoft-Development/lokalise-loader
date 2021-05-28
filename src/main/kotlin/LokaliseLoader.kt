@@ -32,7 +32,7 @@ interface LokaliseLoader {
             return LokaliseLoaderImpl(
                 config.apiToken ?: throw ParameterNotSpecifiedException("API token"),
                 config.projectId ?: throw ParameterNotSpecifiedException("Project ID"),
-                config.outputDirPath ?: throw ParameterNotSpecifiedException("Output directory"),
+                config.outputDirPath,
                 config.platforms,
                 config.defaultLocale,
             )
