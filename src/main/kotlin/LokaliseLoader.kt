@@ -1,7 +1,9 @@
+import data.Language
 import data.Platforms
 import exceptions.LokaliseLoadException
 import exceptions.ParameterNotSpecifiedException
 import exceptions.ResourceWriteException
+
 interface LokaliseLoader {
 
     /**
@@ -10,6 +12,11 @@ interface LokaliseLoader {
      * @throws ResourceWriteException if exception occurred while writing string resources into files
      */
     fun load()
+
+    /**
+     * Returns list of languages supported in current Lokalise project
+     */
+    fun loadLanguages(): List<Language>
 
     data class Config(
         var apiToken: String? = null,

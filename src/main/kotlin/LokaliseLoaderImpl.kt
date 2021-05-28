@@ -77,7 +77,7 @@ internal class LokaliseLoaderImpl(
     }
 
     @Throws(LokaliseLoadException::class)
-    private fun loadLanguages(): List<Language> {
+    override fun loadLanguages(): List<Language> {
         val url = createBaseUrlBuilder()
             .addPathSegment("projects")
             .addPathSegment(projectId)
