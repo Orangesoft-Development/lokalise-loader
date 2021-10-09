@@ -25,6 +25,8 @@ open class LokaliseUpdateTask : DefaultTask() {
     var platforms: List<Platforms> = listOf(Platforms.Android)
     @Input
     var defaultLocaleIso: String = "en"
+    @Input
+    var keys: List<String> = emptyList()
 
     @TaskAction
     fun updateLokalise() = try {
@@ -34,6 +36,7 @@ open class LokaliseUpdateTask : DefaultTask() {
             outputDirPath = targetDir
             platforms = this@LokaliseUpdateTask.platforms
             defaultLocale = defaultLocaleIso
+            keys = this@LokaliseUpdateTask.keys
         }
         lokaliseLoader.load()
     } catch (e: LokaliseException) {

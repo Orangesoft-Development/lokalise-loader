@@ -24,6 +24,7 @@ interface LokaliseLoader {
         var outputDirPath: String? = null,
         var defaultLocale: String = "en",
         var platforms: List<Platforms> = listOf(Platforms.Android),
+        var keys: List<String> = emptyList(),
     )
 
     companion object {
@@ -35,6 +36,7 @@ interface LokaliseLoader {
                 config.outputDirPath,
                 config.platforms,
                 config.defaultLocale,
+                config.keys,
             )
         }
     }

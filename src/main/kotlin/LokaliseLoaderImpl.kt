@@ -17,6 +17,7 @@ internal class LokaliseLoaderImpl(
     private val outputDirPath: String?,
     private val platforms: List<Platforms> = emptyList(),
     private val defaultLocale: String?,
+    private val keys: List<String>,
 ) : LokaliseLoader {
 
     private val okHttpClient by lazy { OkHttpClient() }
@@ -42,6 +43,11 @@ internal class LokaliseLoaderImpl(
             .addQueryParameter("include_screenshots", "0")
             .addQueryParameter("include_translations", "0")
             .addQueryParameter("filter_platforms", platforms.joinToString(",") { it.raw })
+            .apply {
+                if (keys.isNotEmpty()) {
+                    addQueryParameter("filter_keys", keys.joinToString(","))
+                }
+            }
         val keysRequest = Request.Builder()
             .get()
             .addHeader("X-Api-Token", apiToken)
