@@ -37,3 +37,17 @@ val lokaliseLoader = LokaliseLoader.create {
 }
 lokaliseLoader.load()
 ```
+
+Additionally, you can specify list of keys to load from Lokalise. This might be helpful if you want to load some translations in non-main module and prevent all resources to duplicated in main module.
+```kotlin
+task<LokaliseUpdateTask>("lokalise-update") {
+    targetDir = "<resources-directory-path>"
+    apiToken = "<lokalise-user-api-key>"
+    projectId = "<lokalise-projectId>"
+    platforms = listOf(data.Platforms.Android)
+    keys = listOf(
+        "my_first_string",
+        "my_second_string",
+    )
+}
+```
