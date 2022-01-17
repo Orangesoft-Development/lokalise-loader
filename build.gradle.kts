@@ -29,16 +29,4 @@ publishing {
             from(components["java"])
         }
     }
-
-    repositories {
-        maven {
-            name = "GithubPackages"
-            url = uri("https://maven.pkg.github.com/${Config.GithubOrganisation}/${Config.ArtifactId}")
-
-            credentials {
-                username = project.properties["gpr.usr"]?.toString() ?: System.getenv("GPR_USER")
-                password = project.properties["gpr.key"]?.toString() ?: System.getenv("GPR_API_KEY")
-            }
-        }
-    }
 }
