@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.31"
+    kotlin("jvm") version Versions.Kotlin
     `java-library`
     `maven-publish`
 }
@@ -10,23 +10,35 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<KotlinCompile>() {
+tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
 dependencies {
     implementation(gradleApi())
-    implementation("com.squareup.okhttp3:okhttp:4.9.2")
-    implementation("com.google.code.gson:gson:2.8.8")
+    implementation(okHttp())
+    implementation(gson())
 }
 
 publishing {
     publications {
         create<MavenPublication>("lokalise-loader-publish") {
-            group = "com.github.Orangesoft-Development.trueddd"
-            artifactId = "lokalise-loader"
-            version = "0.1.5"
+            group = "com.github.${Config.GithubOrganisation}"
+            artifactId = Config.ArtifactId
+            version = Config.Version
             from(components["java"])
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GithubPackages"
+            url = uri("https://maven.pkg.github.com/${Config.GithubOrganisation}/${Config.ArtifactId}")
+
+            credentials {
+                username = project.properties["gpr.usr"]?.toString() ?: System.getenv("GPR_USER")
+                password = project.properties["gpr.key"]?.toString() ?: System.getenv("GPR_API_KEY")
+            }
         }
     }
 }
