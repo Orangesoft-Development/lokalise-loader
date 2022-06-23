@@ -154,7 +154,7 @@ internal class LokaliseLoaderImpl(
 
     private fun String.formatFromLokalise(): String {
         return this
-            .replace("\'", "\\\'")
+            .replaceNotEscapedCharacters()
             .replace(placeholder) { matchResult ->
                 val literalValue = matchResult.groups["literal"]?.value
                 val number = matchResult.groups["number"]?.value ?: ""
@@ -165,6 +165,12 @@ internal class LokaliseLoaderImpl(
                 }
                 "%$number$literal"
             }
+    }
+
+    private fun String.replaceNotEscapedCharacters():String {
+       return this
+           .replace("\'", "\\\'")
+           .replace("&", "&amp;")
     }
 
     @Throws(ResourceWriteException::class)
