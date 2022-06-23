@@ -167,7 +167,7 @@ internal class LokaliseLoaderImpl(
             }
     }
 
-    private fun String.replaceNotEscapedCharacters():String {
+    private fun String.replaceNotEscapedCharacters(): String {
        return this
            .replace("\'", "\\\'")
            .replace("&", "&amp;")
@@ -219,6 +219,7 @@ internal class LokaliseLoaderImpl(
             }
             val file = File("$outputDirPath/$dirName/strings.xml")
             if (!file.exists()) {
+                file.parentFile.mkdirs()
                 file.createNewFile()
             }
             val langTranslations = translations[isoLang] ?: return@map isoLangTrimmed to false
