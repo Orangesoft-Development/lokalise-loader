@@ -29,4 +29,10 @@ publishing {
             from(components["java"])
         }
     }
+    repositories {
+        maven {
+            name = "LocalTest"
+            url = uri(layout.buildDirectory.dir("snapshots"))
+        }
+    }
 }
