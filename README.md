@@ -13,7 +13,7 @@ repositories {
 Add library definition to dependencies:
 ```kotlin
 // kotlin gradle dsl
-implementaion("com.github.Orangesoft-Development:lokalise-loader:<version>")
+implementation("com.github.Orangesoft-Development:lokalise-loader:<version>")
 ```
 
 Library provides Gradle task to load string resources during builds. To use task register it like in sample below:
