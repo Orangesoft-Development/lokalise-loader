@@ -51,3 +51,9 @@ task<LokaliseUpdateTask>("lokalise-update") {
     )
 }
 ```
+
+If you want to run the new task every time you build the application you can add something like:
+```kotlin
+// kotlin gradle dsl
+tasks.findByPath(":app:preBuild")?.dependsOn(":lokalise-update")
+```
