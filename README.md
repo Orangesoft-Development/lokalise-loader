@@ -27,6 +27,8 @@ task<LokaliseUpdateTask>("lokalise-update") {
 }
 ```
 
+Beware the apiToken is not the sdkToken that is used for the Android and iOS SDKs.
+
 Or use `LokaliseLoader` directly using `create` method:
 ```kotlin
 val lokaliseLoader = LokaliseLoader.create {
