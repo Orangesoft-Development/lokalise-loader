@@ -40,6 +40,6 @@ open class LokaliseUpdateTask : DefaultTask() {
         }
         lokaliseLoader.load()
     } catch (e: LokaliseException) {
-        throw GradleException(e.message)
+        throw GradleException(e.message, e)
     }
 }
