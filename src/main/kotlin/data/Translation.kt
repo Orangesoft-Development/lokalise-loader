@@ -4,9 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class Translation(
     @SerializedName("translation_id")
-    val translationId: Int,
+    val translationId: Long,
     @SerializedName("key_id")
-    val keyId: Int,
+    val keyId: Long,
     @SerializedName("language_iso")
     val languageIso: String,
     @SerializedName("translation")
