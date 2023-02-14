@@ -38,6 +38,8 @@ val lokaliseLoader = LokaliseLoader.create {
 lokaliseLoader.load()
 ```
 
+> Notice: `lokalise-user-api-key` is an `apiToken`, not a `sdkToken`.
+
 Additionally, you can specify list of keys to load from Lokalise. This might be helpful if you want to load some translations in non-main module and prevent all resources to duplicated in main module.
 ```kotlin
 task<LokaliseUpdateTask>("lokalise-update") {
